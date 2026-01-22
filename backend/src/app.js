@@ -1,3 +1,4 @@
+require("./config/database");
 require("dotenv").config();
 
 const express = require("express");
@@ -5,6 +6,7 @@ const {logger} = require("./shared/logger/logger")
 const errorHandler = require("./shared/errors/errorHandler");
 const { error } = require("winston");
 require("./config");
+const {generateToken,verifyToken}=require("./shared/utils/jwtTokens")
 
 const app = express();
 
@@ -36,8 +38,16 @@ app.get("/health",(req,res)=>{
   })
 });
 
+//testing the jwt token creation 
+const token=generateToken({userId:"123"});
+console.log("JWT:",token);
+
+const decoded=verifyToken(token);
+console.log("Decoded:",decoded); //logging whether the system verifies the token created 
+
+
 app.get("/crash-test",(req,res)=>{
-  throw new error("This is an intentional crash to test the server")
+  throw new Error("This is an intentional crash to test the server")
 });
 
 app.use(errorHandler);

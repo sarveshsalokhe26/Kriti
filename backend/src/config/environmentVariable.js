@@ -1,5 +1,4 @@
 // writing a function to retrieve the env variable centrally
-
 const { error } = require("winston");
 
 function getEnv(key,required=true){
