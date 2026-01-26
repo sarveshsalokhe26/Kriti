@@ -1,4 +1,4 @@
-const logger = require("../logger/logger");
+const {logger} = require("../logger/logger");
 
 function errorHandler(err, req, res, next) {
   logger.error(err.message);
@@ -7,5 +7,6 @@ function errorHandler(err, req, res, next) {
     error: "Internal Server Error",
   });
 }
-module.exports = errorHandler;
-/////////////
+module.exports = {
+  errorHandler,
+}
