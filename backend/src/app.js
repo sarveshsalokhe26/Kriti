@@ -41,20 +41,6 @@ app.get("/crash-test", () => {
   throw new Error("Intentional crash test");
 });
 
-//Testing whether the otp genereation works perfectly fine or not 
-(async()=>{
-  const otp = generateOTP();
-  const hashedotp = await hashOTP(otp);
-  const comparingotp = await compareOTP(otp,hashedotp);
-
-
-  console.log(`Generated OTP:`,otp);//logging to the system to check whether the otp is genereated or not 
-  console.log(`Hashed OTP:`,hashedotp)//checking whether the otp is perfectly hased or not\
-  console.log("Verifying OTP:",comparingotp)
-  console.log("OTP Expiry time:",getOTPExpiry());
-}
-)();
-
 // error handler MUST be last
 app.use(errorHandler);
 
