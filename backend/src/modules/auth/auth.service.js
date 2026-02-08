@@ -176,7 +176,24 @@ async function loginUser({email,phone,password}) {
   }
 
   //if password is correct returning a jwt token
-  return generateToken({userId:user.id});
+  const token = generateToken({userId:user.id});
+
+  await db.query(
+    `UPDATE users 
+     SET last_login_at = NOW() 
+     WHERE id = $1`,
+    [user.id]
+  );
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      name: user.name,
+    },
+  };
 }
 
 

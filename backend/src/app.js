@@ -7,6 +7,7 @@ require("./config");
 const { logger } = require("./shared/logger/logger");
 const {errorHandler} = require("./shared/errors/errorHandler");
 const authRoutes = require("./modules/auth/auth.routes");
+const authMiddleware = require("./shared/middleware/authMiddleware")
 
 //Testing the otp creation (unit test)
 const {generateOTP,hashOTP,compareOTP,isOTPExpired,getOTPExpiry}= require("../src/shared/utils/otp")
@@ -39,6 +40,13 @@ app.get("/crash", (req, res, next) => {
 
 app.get("/crash-test", () => {
   throw new Error("Intentional crash test");
+});
+
+app.get("/me",authMiddleware,(req,res)=>{
+  res.json({
+    message:"You're Authorised",
+    userID:req.user.id,
+  });
 });
 
 // error handler MUST be last
