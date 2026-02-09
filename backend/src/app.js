@@ -7,7 +7,8 @@ require("./config");
 const { logger } = require("./shared/logger/logger");
 const {errorHandler} = require("./shared/errors/errorHandler");
 const authRoutes = require("./modules/auth/auth.routes");
-const authMiddleware = require("./shared/middleware/authMiddleware")
+const authMiddleware = require("./shared/middleware/authMiddleware");
+const userRoutes = require("./modules/users/user.routes");
 
 //Testing the otp creation (unit test)
 const {generateOTP,hashOTP,compareOTP,isOTPExpired,getOTPExpiry}= require("../src/shared/utils/otp")
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // routes
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
 // test routes
 app.get("/", (req, res) => {

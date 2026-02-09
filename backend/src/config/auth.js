@@ -4,6 +4,6 @@ const {getEnv}=require("./environmentVariable")
 module.exports={
     jwt:{
         secret:getEnv("JWT_SECRET"), 
-        expiresIn:getEnv("JWT_EXPIRES_IN",false)||"7d",
+        expiresIn:getEnv("JWT_EXPIRES_IN",false)||"100d",
     },
 };
