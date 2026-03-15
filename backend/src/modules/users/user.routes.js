@@ -2,12 +2,22 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require('../../shared/middleware/authMiddleware');
-const userController = require("./user.controller");
+const userController = require("../users/user.controller")
 
-//Generating a protected route which is verified by the authmiddleware and then proceeds
+/*
+*Protcted route to get the user details  
+*/
 router.get("/me",authMiddleware,userController.getMe);
 
-//Generating a protected route for user to partially update themselves
+/*
+*Protected Route to partially update the USER DETAILS
+*/
 router.patch("/me",authMiddleware,userController.updateMe);
+
+/*
+*Protected route for user to change the password
+*/
+router.patch("change-password",authMiddleware,userController.changePassword);
+
 
 module.exports = router;

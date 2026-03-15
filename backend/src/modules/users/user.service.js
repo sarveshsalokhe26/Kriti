@@ -1,11 +1,18 @@
+const { compare } = require("bcrypt");
 const db = require("../../config/database");
+const AppError = require("../../shared/errors/appError");
+const {comparePassword, hashPassword}=require("../../shared/utils/passwordHashing");
 
 
-//Writing the function to retrieve the user detiails with the help of user id 
+/*
+*Retrieving the User Details using the userID provided by the user itself
+*/
 async function getUserByID(userID) {
-
-    //Writing the db query
-    const result = db.query(
+    
+    /*
+    *Datatbase query to retrieve the USER DETAILS;
+    */
+    const result =await db.query(
         `SELECT 
         id,
         email,
@@ -17,12 +24,17 @@ async function getUserByID(userID) {
         WHERE id =$1`,
         [userID]
     );
-
+    
+    /*
+    *Throwing an error if the user was not found
+    */
     if((await result).rows.length===0){
-        throw new Error("User not found");
+        throw new AppError("User not found");
     }
     
-    //Returning the user info if the user is found
+    /*
+    *Returning the user details  
+    */
     return (await result).rows[0];
 }
 
@@ -30,28 +42,36 @@ async function getUserByID(userID) {
  * Updating the user partially
  */
 async function updateUserByID(userID,data) {
-    //writing the allowed fileds that can be edited
+    
+    /*
+    *Allowed fields that can be updated
+    */
     const allowedFields = ["name"];
     const updates = [];
-    const values = []; //array for storing the changes that need to be done 
+    const values = [];  
     let paramIndex = 1;
     
-    //for now only names field is allowed to be updated 
+    
     for(const field of allowedFields){
         if(data[field]!==undefined){
             updates.push(`${field}=$${paramIndex}`)
-            values.push(data[field]) //pushing the values in the values array  
+            values.push(data[field])  
             paramIndex++;
         }
     }
 
-    //Handling the error if no valid fields are provided 
+    /*
+    *No values provided Error 
+    */ 
     if(values.length===0){
-        throw new Error("No valid fields provided fo the updates");
+        throw new AppError("No valid fields provided fo the updates");
     }
     
-    values.push(userID); //it is stored at an index of 2 in the values array but the postgres treats it as 3
-
+    values.push(userID);
+    
+    /*
+    *Database query to update the allowed fields 
+    */
     const result = await db.query(
         `UPDATE users
          SET ${updates.join(", ")},updated_at=NOW()
@@ -60,12 +80,59 @@ async function updateUserByID(userID,data) {
         `,values
     )
     
-    //returning the updated data 
+    /*
+    *Returning the updated data 
+    */
     return result.rows[0];
-
 } 
+
+/*
+*Service: Updating the user password
+*/
+async function changePassword(userID,currentPassword,newPassword) {
+    
+    /*
+    * Retrieving the existing password from the Database
+    */
+    const result = await db.query(
+        `SELECT password_hash FROM users where id=$1`,[userID]
+    );
+
+    /*
+    *Returning a error if the uder not found 
+    */
+    if(result.rows.length===0){
+        throw new AppError("User not found",400,"USER_NOT_FOUND");
+    }
+    
+    /*
+    *Storing the retrieved password as the user  
+    */
+    const user = result.rows[0];
+
+    const isMatch = await comparePassword(currentPassword,user.password_hash);
+
+    if(!isMatch){
+        throw new AppError("Current password is incorrect",401,"INVALID_CURRENT_PASSWORD");
+    }
+
+    /*
+    *Hashing the new password that is gonna be updated by the user
+    */
+    const hashedPassword = await hashPassword(newPassword);
+
+    await db.query(`UPDATE users 
+            SET password_hash=$1,
+            password_changed_at=NOW(),
+            updated_at=NOW()
+            WHERE id=$2`,[hashedPassword,userID]
+        );
+    
+    return true;
+}
 
 module.exports={
     getUserByID,
-    updateUserByID
+    updateUserByID,
+    changePassword
 }

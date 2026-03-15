@@ -10,8 +10,6 @@ const authRoutes = require("./modules/auth/auth.routes");
 const authMiddleware = require("./shared/middleware/authMiddleware");
 const userRoutes = require("./modules/users/user.routes");
 
-//Testing the otp creation (unit test)
-const {generateOTP,hashOTP,compareOTP,isOTPExpired,getOTPExpiry}= require("../src/shared/utils/otp")
 const app = express();
 
 // 🔴 REQUIRED: parse JSON bodies
