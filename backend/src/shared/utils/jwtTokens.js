@@ -4,11 +4,19 @@ const jwt = require("jsonwebtoken");
 //importing the auth.js file as we retrieve the jwt secret from an centralized env function
 const authconfig = require("../../config/auth");
 
-//function to create jwt tokens
+/*
+*Function to generate a jwt Access token  
+*/
 function generateToken(payload){
-    return jwt.sign(payload,authconfig.jwt.secret,{expiresIn:authconfig.jwt.expiresIn});
+    return jwt.sign(payload,authconfig.jwt.secret,{expiresIn:"15m"});
 }
-//the function requires the payload that is the data that is supposed to be transferred , jwt secret value and the token expiration value which is 7 days for our application
+
+/*
+*Function to generate a jwt refresh token 
+*/
+function generateRefreshToken(payload){
+    return jwt.sign(payload,authconfig.jwt.secret,{expiresIn:"7d"});
+}
 
 //function for verifying the jwt tokens 
 function verifyToken(token){
@@ -17,7 +25,8 @@ function verifyToken(token){
 
 module.exports={
     generateToken,
-    verifyToken
+    verifyToken,
+    generateRefreshToken
 }
 
 
