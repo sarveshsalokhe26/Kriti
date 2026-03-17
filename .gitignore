@@ -1,2 +1,17 @@
 backend/.env
 backend/.env
+node_modules
+backend/package.json
+backend/node_modules/.package-lock.json
+backend/node_modules/qs/test/utils.js
+backend/node_modules/qs/test/parse.js
+backend/node_modules/qs/lib/utils.js
+backend/node_modules/qs/lib/parse.js
+backend/node_modules/qs/dist/qs.js
+backend/node_modules/qs/README.md
+backend/node_modules/qs/package.json
+backend/node_modules/qs/CHANGELOG.md
+backend/node_modules/qs/.editorconfig
+backend/node_modules/pg-connection-string/package.json
+backend/node_modules/pg-connection-string/index.js
+backend/node_modules/.package-lock.json
