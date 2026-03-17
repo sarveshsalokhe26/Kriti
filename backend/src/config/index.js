@@ -9,7 +9,7 @@ module.exports={
 
     auth:{
         jwtSecret: getEnv("JWT_SECRET"),
-        jwtExpiry: getEnv("JWT_EXPIRY",false)||"7d", //retrieving the jwt expiry 
+        jwtExpiry: getEnv("JWT_EXPIRY",false)||"10d", //retrieving the jwt expiry 
     },
 
     db  : {

@@ -1,9 +1,13 @@
-//writing the controller 
-//what does the controller do ? controller reads the http request calls the service and returns the response to the user
+ /**
+what does the controller do ? 
+controller reads the http request, calls the service and returns the response to the user
+*/
 const authService= require("./auth.service");
+const {successResponse,errorResponse}= require("../../shared/utils/response");
+const AppError = require("../../shared/errors/appError");
 
 /*
- *Signup Request
+ *Signup Request.
 */ 
 async function signup(req,res,next) {
     try{
@@ -16,10 +20,11 @@ async function signup(req,res,next) {
             phone,
             signupsource:"app",
         });
-
-        res.status(200).json({
-            message:"The user signup was successfull",
-        })
+        
+        /*
+        *Successfull signup response: Notifying the user that the signup was successfull.  
+        */
+        return successResponse(res,null,"The signup was successful");
         
     }
     catch(error){
@@ -28,54 +33,63 @@ async function signup(req,res,next) {
 }
 
 /*
- *Request otp for verification
+ * Request otp for verification.
 */
 async function  requestVerification(req,res,next) {
     try{
 
-        //Request body consist of email and phone number which user's gonna try to verfy
         const{email,phone}=req.body; 
         
-        //returning error if user sends an empty request
+        /*
+        * Error Handle: if the request does no contain any indentifiers returning an error.
+        */
         if(!email && !phone){
-            return res.status(400).json({
-                message:"Email or phone is required",
-            });
+            throw new AppError("Email or phone is required",401,"MISSING_IDENTIFIER");
         }
         
-        //calling the verification service
+        /*
+        * Calling the verification service. 
+        */
         await authService.createVerificationOTP({email,phone});
         
-        res.status(200).json({
-            message:"Verification otp is sent",
-        });
-
+        /*
+        * Success Response: Verification otp has been sent. 
+        */
+        return successResponse(res,null,"Verification otp has been sent")
     }catch(err){
         next(err);
     }
 }
 
 /*
- *verifying otp sent by the user
+ *verifying otp sent by the user.
 */
 async function verifyOTP(req,res,next) {
-    try{//Required body for verifying the otp 
+    try{
+
+    /*
+    Verify OTP body:
+    1.Email or Phone.
+    2.OTP received.
+    */    
     const {email,phone,otp}=req.body;
 
-    //Returning the error if the request is empty
+    /*
+    *Error Handle: Empty verification request, No data provided for verification.
+    */
     if((!email&&!phone)&&!otp){
-        res.status(400).json({
-            message:"Identifier and OTP is required",
-        });
+        throw new AppError("Identifier and OTP is required",400,"MISSING_OTP_FIELDS")
     }
 
-    //calling the verification service to verify the user 
+    /*
+    *Calling the verification service
+    */
     await authService.verifyUserOTP({email,phone,otp});
 
-    //Verification successfull response 
-    res.status(200).json({
-        message:"Account verified Successfully",
-    });
+    /*
+    * Success response: Returning an response that the Account verified successfully.
+    */ 
+    return successResponse(res,null,"Account verified successfully")
   }
    catch(err){
     next(err);
@@ -91,17 +105,12 @@ async function login(req,res,next) {
         
         //Throwing error if the request has empty body 
         if((!email&&!phone)||!password){
-            return res.status(400).json({
-                message:"Identifiers and password are required",
-            });
+            throw new AppError("Identifier and password is missing",400,"IDENTIFIER_AND_PASSWORD_MISSING");
         }
 
         const token = await authService.loginUser({email,phone,password});
 
-        res.status(200).json({
-            message:"Login Successfull",
-            token,
-        });
+        return successResponse(res,token,"Login successfull",200);
 
     }catch(err){
         next(err);
