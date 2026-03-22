@@ -21,6 +21,7 @@ const {
   validatePasswordResetConfirm,
 } = require("../../shared/utils/validation");
 const { logger } = require("../../shared/logger/logger");
+const { otp } = require("../../config/auth");
 
 /**
  * POST /auth/signup
@@ -95,13 +96,13 @@ async function requestVerification(req, res, next) {
     const result = await authService.createVerificationOTP({
       email,
       phone,
-    });
-
+    }); 
+     
     // In production, don't return the OTP
     res.status(200).json(
       successResponse(
         {},
-        "Verification OTP sent to your email/phone"
+        "Verification OTP sent to your email/phone",
       )
     );
   } catch (error) {
@@ -249,13 +250,13 @@ async function requestPasswordReset(req, res, next) {
     }
 
     // Request reset
-    await authService.requestPasswordReset({ email, phone });
+    const passwordReset = await authService.requestPasswordReset({ email, phone });
 
     // Don't reveal if user exists
     res.status(200).json(
       successResponse(
         {},
-        "If an account exists, password reset instructions will be sent"
+        "If an account exists, password reset instructions will be sent",
       )
     );
   } catch (error) {

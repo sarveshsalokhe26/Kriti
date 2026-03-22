@@ -193,6 +193,7 @@ async function createVerificationOTP({ email, phone }) {
    *Generate OTP 
   */
   const otp = generateOTP();
+  logger.info("generated OTP",otp);
   const otpHash = await hashOTP(otp);
 
   // Store OTP
@@ -203,6 +204,11 @@ async function createVerificationOTP({ email, phone }) {
   );
 
   logger.info("OTP created successfully", { userId: user.id });
+  
+  
+  // In production, send OTP via email/SMS here
+  // For now, we'll return it for testing (remove in production)
+  return { otp, expiresAt: getOTPExpiry() };
 }
 
 
@@ -321,7 +327,7 @@ async function loginUser({ email, phone, password }) {
    *Finding the user 
   */
   const loginRes = await db.query(
-    `SELECT id, password_hash, is_verified, email, phone, name, role, created_at
+    `SELECT id, password_hash, is_verified, email, phone, name, created_at
      FROM users
      WHERE email = $1 OR phone = $2
      LIMIT 1`,
@@ -478,6 +484,9 @@ async function requestPasswordReset({ email, phone }) {
   );
 
   logger.info("Password reset OTP created", { userId: user.id });
+
+    // In production, send OTP via email/SMS
+  return { otp, expiresAt: getOTPExpiry() }; // Remove in production
 }
 
 
