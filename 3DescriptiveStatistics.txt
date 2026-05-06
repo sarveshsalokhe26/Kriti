@@ -1,0 +1,43 @@
+import pandas as pd
+
+# Creating a sample dataset
+data = {
+    'Department': ['IT', 'HR', 'IT', 'Sales', 'HR', 'IT', 'Sales', 'Sales'],
+    'Income': [75000, 52000, 80000, 62000, 55000, 95000, 58000, 60000],
+    'Age': [28, 35, 40, 30, 32, 45, 29, 31]
+}
+df = pd.DataFrame(data)
+
+# Providing summary statistics of Income grouped by Department
+summary_stats = df.groupby('Department')['Income'].agg(['mean', 'median', 'min', 'max', 'std'])
+
+print("Summary Statistics of Income by Department:")
+print(summary_stats)
+
+# Create a list that contains a numeric value for each response 
+# (e.g., extracting the mean income as a list)
+mean_income_list = summary_stats['mean'].tolist()
+print(f"\nList of Mean Incomes: {mean_income_list}")
+
+
+import pandas as pd
+import seaborn as sns
+
+# Load the Iris dataset
+# You can also use: df = pd.read_csv('iris.csv')
+df = sns.load_dataset('iris')
+
+# Define the species we want to analyze
+species_list = ['setosa', 'versicolor', 'virginica']
+
+for species in species_list:
+    print(f"\n--- Statistical Details for {species.upper()} ---")
+    
+    # Filter the dataframe for the specific species
+    subset = df[df['species'] == species]
+    
+    # Use .describe() for basic stats and include specific percentiles
+    stats = subset.describe(percentiles=[.25, .5, .75])
+    
+    # Displaying mean, std, and percentiles for sepal_length and petal_length
+    print(stats)

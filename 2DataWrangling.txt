@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Create synthetic dataset
+data = {
+    'Student_ID': range(1, 11),
+    'Gender': ['M', 'F', 'M', 'F', 'F', 'M', 'M', 'F', 'M', 'F'],
+    'Math_Score': [85, 90, np.nan, 78, 92, 300, 88, np.nan, 95, 82], # 300 is an outlier
+    'Reading_Score': [70, 72, 68, 74, 150, 71, 69, 73, 75, 72],     # 150 is an outlier
+    'Writing_Score': [45, 50, 55, 60, 65, 70, 75, 80, 85, 90],
+    'Placement_Score': [60, 65, 70, 75, 80, 85, 90, 95, 100, 110]
+}
+df = pd.DataFrame(data)
+
+# Check for missing values
+print("Missing values per column:")
+print(df.isnull().sum())
+
+
+
+# Function to detect outliers using IQR
+def detect_outliers(data):
+    outliers = []
+    data = sorted(data)
+    q1 = np.percentile(data, 25)
+    q3 = np.percentile(data, 75)
+    iqr = q3 - q1
+    lower_bound = q1 - (1.5 * iqr)
+    upper_bound = q3 + (1.5 * iqr)
+    
+    for i in data:
+        if i < lower_bound or i > upper_bound:
+            outliers.append(i)
+    return outliers, lower_bound, upper_bound
+
+# Scan Reading_Score
+outliers, lb, ub = detect_outliers(df['Reading_Score'])
+print(f"Outliers in Reading_Score: {outliers}")
+
+# Treatment: Capping (Winsorization)
+# We replace values beyond the bounds with the bound values themselves
+df['Reading_Score'] = np.clip(df['Reading_Score'], lb, ub)
+
+
+# Check skewness before transformation
+original_skew = df['Placement_Score'].skew()
+
+# Apply Log Transformation
+df['Log_Placement_Score'] = np.log1p(df['Placement_Score'])
+
+# Check skewness after transformation
+transformed_skew = df['Log_Placement_Score'].skew()
+
+print(f"Skewness before: {original_skew:.2f}")
+print(f"Skewness after: {transformed_skew:.2f}")
+
+# Visualize the effect
+plt.figure(figsize=(10, 4))
+plt.subplot(1, 2, 1)
+sns.histplot(df['Placement_Score'], kde=True).set_title("Before Log Transform")
+plt.subplot(1, 2, 2)
+sns.histplot(df['Log_Placement_Score'], kde=True).set_title("After Log Transform")
+plt.show()
+
+

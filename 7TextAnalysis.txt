@@ -1,0 +1,55 @@
+import nltk
+
+# Download the specific resources required for preprocessing
+nltk.download('punkt_tab')        # Fixes the LookupError for word_tokenize
+nltk.download('stopwords')        # Needed for stop words removal
+nltk.download('averaged_perceptron_tagger_eng') # Needed for POS Tagging
+nltk.download('wordnet')          # Needed for Lemmatization
+
+
+
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Sample Document
+document = "The data scientists are studying complex patterns in large datasets."
+
+# 1. Tokenization
+tokens = word_tokenize(document.lower())
+
+# 2. Stop words removal
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [w for w in tokens if w not in stop_words and w.isalnum()]
+
+# 3. POS Tagging
+pos_tags = nltk.pos_tag(filtered_tokens)
+
+# 4. Stemming & Lemmatization
+ps = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+stemmed = [ps.stem(w) for w in filtered_tokens]
+lemmatized = [lemmatizer.lemmatize(w) for w in filtered_tokens]
+
+print(f"Original: {filtered_tokens}")
+print(f"Stemmed: {stemmed}")
+print(f"Lemmatized: {lemmatized}")
+
+
+
+corpus = [
+    "The data scientists are studying patterns.",
+    "Data science involves data and patterns.",
+    "The patterns are complex."
+]
+
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(corpus)
+
+# Display results in a table-like format
+import pandas as pd
+df = pd.DataFrame(tfidf_matrix.toarray(), columns=vectorizer.get_feature_names_out())
+print(df)

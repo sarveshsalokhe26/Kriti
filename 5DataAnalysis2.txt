@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+
+# Load dataset
+# Ensure the file is in your working directory
+df = pd.read_csv('Social_Network_Ads.csv')
+
+# Preprocessing: Usually, we use 'Age' and 'EstimatedSalary' (columns 2 & 3)
+X = df.iloc[:, [2, 3]].values
+y = df.iloc[:, 4].values
+
+# Split into Training and Testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
+
+# Feature Scaling (Crucial for Logistic Regression)
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+
+# Initialize and Train Classifier
+classifier = LogisticRegression()
+classifier.fit(X_train, y_train)
+
+# Predict Results
+y_pred = classifier.predict(X_test)
+
+
+
+cm = confusion_matrix(y_test, y_pred)
+# Extracting values from the matrix
+# cm = [[TN, FP],
+#       [FN, TP]]
+tn, fp, fn, tp = cm.ravel()
+
+print(f"TP: {tp}, FP: {fp}, TN: {tn}, FN: {fn}")
+
+
+
+# Calculations
+accuracy = accuracy_score(y_test, y_pred)
+error_rate = 1 - accuracy
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+
+print("-" * 30)
+print(f"Accuracy:    {accuracy:.2%}")
+print(f"Error Rate:  {error_rate:.2%}")
+print(f"Precision:   {precision:.2%}")
+print(f"Recall:      {recall:.2%}")
+print("-" * 30)

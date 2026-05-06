@@ -1,0 +1,47 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load the Iris dataset
+url = "https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/iris.csv"
+df = pd.read_csv(url)
+
+# 1. Listing features and their types
+print("Feature Types:")
+print(df.dtypes)
+
+# Inference for your report:
+# - sepal_length: Numeric (Continuous)
+# - sepal_width:  Numeric (Continuous)
+# - petal_length: Numeric (Continuous)
+# - petal_width:  Numeric (Continuous)
+# - species:      Nominal (Categorical)
+
+
+
+# Create a figure with a grid of subplots
+plt.figure(figsize=(12, 8))
+
+# Select only numeric columns
+features = df.columns[:-1] 
+
+for i, feature in enumerate(features):
+    plt.subplot(2, 2, i+1) # Create a 2x2 grid
+    sns.histplot(df[feature], kde=True, color='skyblue')
+    plt.title(f'Distribution of {feature}')
+
+plt.tight_layout()
+plt.show()
+
+
+plt.figure(figsize=(12, 8))
+
+for i, feature in enumerate(features):
+    plt.subplot(2, 2, i+1)
+    sns.boxplot(x='species', y=feature, data=df)
+    plt.title(f'Box Plot of {feature} by Species')
+
+plt.tight_layout()
+plt.show()
+
+

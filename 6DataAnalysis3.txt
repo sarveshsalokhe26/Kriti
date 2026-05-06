@@ -1,0 +1,39 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+
+# Load dataset (using seaborn for convenience or load your iris.csv)
+import seaborn as sns
+iris = sns.load_dataset('iris')
+
+# Split into features and target
+X = iris.drop('species', axis=1)
+y = iris['species']
+
+# Split into Training (80%) and Testing (20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize and Train the Model
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+# Make Predictions
+y_pred = model.predict(X_test)
+
+
+
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:\n", cm)
+
+
+# Full Metrics Output
+accuracy = accuracy_score(y_test, y_pred)
+error_rate = 1 - accuracy
+precision = precision_score(y_test, y_pred, average='weighted')
+recall = recall_score(y_test, y_pred, average='weighted')
+
+print(f"Accuracy: {accuracy:.2%}")
+print(f"Error Rate: {error_rate:.2%}")
+print(f"Precision: {precision:.2%}")
+print(f"Recall: {recall:.2%}")

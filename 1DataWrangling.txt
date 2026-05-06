@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
+
+
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+df = pd.read_csv(url)
+
+# Check dimensions (Rows, Columns)
+print(f"Dataset Dimensions: {df.shape}")
+
+
+
+# Initial Statistics
+print(df.describe())
+
+# Check for missing values
+print("\nMissing values per column:")
+print(df.isnull().sum())
+
+
+
+# 1. Summarize types
+print("\nData Types before conversion:")
+print(df.dtypes)
+
+# 2. Type Conversion
+# 'Survived' is read as an int, but logically it's a category
+df['Survived'] = df['Survived'].astype('category')
+
+# 3. Data Normalization (Example: Feature Scaling for 'Fare')
+# We bring the fare into a 0 to 1 range so one feature doesn't dominate.
+df['Fare_Normalized'] = (df['Fare'] - df['Fare'].min()) / (df['Fare'].max() - df['Fare'].min())
+
+print("\nData Types after conversion:")
+print(df['Survived'].dtype)
+
+
+# Label Encoding for Sex (Male -> 1, Female -> 0)
+le = LabelEncoder()
+df['Sex'] = le.fit_transform(df['Sex'])
+
+# One-Hot Encoding for Embarked (Creates new columns for each port)
+df = pd.get_dummies(df, columns=['Embarked'], prefix='Port')
+
+print("\nTransformed Data (First 5 rows):")
+print(df[['Sex', 'Port_C', 'Port_Q', 'Port_S']].head())

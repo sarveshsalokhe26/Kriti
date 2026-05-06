@@ -1,0 +1,30 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 1. Load the inbuilt titanic dataset
+titanic = sns.load_dataset('titanic')
+
+# Display the first few rows to see the structure
+print("Titanic Dataset Structure:")
+display(titanic.head())
+
+# Pattern Check: Survival Rate by Gender
+sns.barplot(x='sex', y='survived', data=titanic)
+plt.title('Survival Rate by Gender')
+plt.show()
+
+# Pattern Check: Survival Rate by Class
+sns.barplot(x='pclass', y='survived', data=titanic)
+plt.title('Survival Rate by Passenger Class')
+plt.show()
+
+# Create a histogram for the 'fare' column
+plt.figure(figsize=(10, 6))
+sns.histplot(titanic['fare'], bins=30, kde=True, color='darkgreen')
+
+# Adding labels and title
+plt.xlabel('Price of Ticket (Fare)')
+plt.ylabel('Number of Passengers')
+plt.title('Distribution of Ticket Fares')
+
+plt.show()
